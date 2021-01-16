@@ -32,15 +32,21 @@ class ContentDetailViewController: UIViewController {
     }
     
     func configureView() {
-        if let imageUrl = URL(string: content.Icon.URL) {
-            imageView.image = UIImage(url: imageUrl)
+      let url = content.FirstURL + content.Icon.URL
+        if let imageUrl = URL(string: url) {
+          DispatchQueue.global(qos: .background).async {
+            if let data = try? Data(contentsOf: imageUrl) {
+              DispatchQueue.main.async { [weak self] in
+                self?.imageView.image = UIImage(data: data)
+              }
+            }
+          }
         } else {
             imageView.image = UIImage(named: "PlaceHolder")
         }
         titleLabel.text = content.Text
         descLabel.text = content.Result
     }
-
 }
 
 extension UIImage {
